@@ -15,11 +15,6 @@ from .schemas import (
 router = Router()
 
 
-def allow_annon(request):
-    if not request.user.is_authenticated:
-        return True
-
-
 @router.get(
     "",
     response=List[WaitlistEntryListSchema],
@@ -34,7 +29,7 @@ def list_waitlist_entries(request):
 @router.post(
     "",
     response=WaitlistEntryDetailSchema,
-    auth=helpers.api_auth_user_or_annon,
+    auth=helpers.api_auth_user_or_anon,
 )
 def create_waitlist_entry(request, data: WaitlistEntryCreationSchema):
     obj = WaitlistEntry(**data.dict())
