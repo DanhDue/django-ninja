@@ -4,12 +4,15 @@ from django.shortcuts import get_object_or_404
 from ninja import Router
 
 import helpers
+import json
 
+from .forms import WaitlistEntryCreationForm
 from .models import WaitlistEntry
 from .schemas import (
     WaitlistEntryCreationSchema,
     WaitlistEntryDetailSchema,
     WaitlistEntryListSchema,
+    ErrorWaitlistEntryCreationSchema,
 )
 
 router = Router()
@@ -28,12 +31,20 @@ def list_waitlist_entries(request):
 
 @router.post(
     "",
-    response=WaitlistEntryDetailSchema,
+    response={
+        200: WaitlistEntryDetailSchema,
+        400: ErrorWaitlistEntryCreationSchema,
+    },
     auth=helpers.api_auth_user_or_anon,
 )
 def create_waitlist_entry(request, data: WaitlistEntryCreationSchema):
-    obj = WaitlistEntry(**data.dict())
-    print(request.user)
+    form = WaitlistEntryCreationForm(data.dict())
+    if not form.is_valid():
+        # cleaned_data = form.cleaned_data
+        # obj = WaitlistEntry(**cleaned_data.dict())
+        form_errors = json.loads(form.errors.as_json())
+        return 400, form_errors
+    obj = form.save(commit=False)
     if request.user.is_authenticated:
         obj.user = request.user
     obj.save()

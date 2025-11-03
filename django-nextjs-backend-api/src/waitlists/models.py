@@ -11,7 +11,7 @@ class WaitlistEntry(models.Model):
         User, default=None, null=True, blank=True, on_delete=models.SET_NULL
     )
     # user_id ^
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
