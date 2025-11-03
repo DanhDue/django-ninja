@@ -2,8 +2,8 @@ from typing import Optional
 from ninja import NinjaAPI, Schema
 
 from ninja_extra import NinjaExtraAPI
-from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.controller import NinjaJWTDefaultController
+import helpers
 
 api = NinjaExtraAPI()
 api.register_controllers(NinjaJWTDefaultController)
@@ -26,7 +26,7 @@ def get_status(request):
 @api.get(
     "/me",
     response=UserSchema,
-    auth=JWTAuth(),
+    auth=helpers.api_auth_user_required,
 )
 def me(request):
     return request.user
